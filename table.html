@@ -10,7 +10,9 @@
 
 <script crossorigin="anonymous" src="createTable.js"></script>
 <script crossorigin="anonymous">
-fetch ("./periodicTableJSON.json", {mode: "no-cors"})
+const base = "https://raw.githubusercontent.com/";
+const path = "RichCaloggero/RichCaloggero.github.io/master/";
+fetch (base + path + "periodicTableJSON.json")
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
