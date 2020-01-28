@@ -9,7 +9,7 @@
 
 <script src="createTable.js"></script>
 <script>
-fetch ("periodicTableJSON.json")
+fetch ("./periodicTableJSON.json")
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
