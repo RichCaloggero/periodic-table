@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,9 +9,9 @@
 
 <script crossorigin="anonymous" src="createTable.js"></script>
 <script crossorigin="anonymous">
-const base = "https://raw.githubusercontent.com/";
-const path = "RichCaloggero/RichCaloggero.github.io/master/";
-fetch (base + path + "periodicTableJSON.json")
+const path = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/PeriodicTableJSON.json";
+
+fetch (path)
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
