@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+<title>Table...</title>
+</head>
+<body>
+
+<script src="createTable.js"></script>
+<script>
+fetch ("periodicTableJSON.json")
+.then(response => {
+if (response.ok) return response.json();
+else throw new Error(response.error);
+}).then (data => document.body.appendChild(createTable(data)))
+.catch(error => alert(`${error.message}\n${error.stack}\n`));
+
+</script>
+
+</body>
+</html>
