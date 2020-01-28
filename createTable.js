@@ -1,3 +1,5 @@
+// Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
+
 function createTable (data) {
 const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
