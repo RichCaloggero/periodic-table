@@ -10,7 +10,7 @@
 
 <script crossorigin="anonymous" src="createTable.js"></script>
 <script crossorigin="anonymous">
-fetch ("./periodicTableJSON.json")
+fetch ("./periodicTableJSON.json", {mode: "no-cors"})
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
