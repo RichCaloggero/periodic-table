@@ -1,19 +1,28 @@
 // Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
 
-function createTable (data) {
+function createTable (data, arrowNavigation = false) {
 const elements = data.elements;
 const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 table.appendChild(head);
 table.appendChild(body);
+if (arrowNavigation) {
+table.setAttribute("role", "grid");
+table.addEventListener("keydown", _arrowNavigation);
+table.addEventListener("focusin", trackFocus);
+setTimeout (() => table.querySelector("td").focus(), 0);
+} // if
 
 table.addEventListener("click", e => {
 const cell = e.target.closest("td");
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.id);
 const element = elements.find(element => element.number === atomicNumber);
-const elementInfo = createModal(getElementInfo(element), link);
+const elementInfo = createModal(
+getElementInfo(element),
+arrowNavigation? cell : link
+); // createModal
 document.body.appendChild(elementInfo);
 
 elementInfo.querySelector(".close").focus();
@@ -39,22 +48,33 @@ colCount += 1;
 col = document.createElement("td");
 } // if
 
+
 if (element.xpos > colCount) {
+if (arrowNavigation) col.tabIndex = -1;
 col.setAttribute("colspan", String(element.xpos - colCount));
+col.classList.add("empty");
 colCount = element.xpos;
 row.appendChild(col);
 col = document.createElement("td");
 } // if
 
-col.innerHTML = `<a href="#">
-<div class="number">${element.number}</div>
+let html = `<div class="number">${element.number}</div>
 <div class="name-and-symbol">
 <span class="name">${element.name}</span> <span class="symbol">(${element.symbol})</span>
 </div>
 <div class="mass">${element.atomic_mass}</div>
-</a>`;
+`;
+
+if (arrowNavigation) {
+col.tabIndex = -1;
+col.innerHTML = html;
+} else {
+col.innerHTML = `<a href="#">${html}</a>`;
+} // if
 
 col.id = String(element.number);
+col.setAttribute("data-group", String(element.xpos));
+col.setAttribute("data-period", String(element.period));
 row.appendChild(col);
 }); // forEach element
 
@@ -129,6 +149,58 @@ ${body}
 
 return info;
             } // getElementInfo
+
+function _arrowNavigation (e) {
+if (e.altKey || e.shiftKey || e.ctrlKey) return true;
+const key = e.key;
+const cell = e.target;
+const row = cell.parentElement;
+const rows = row.parentElement;
+const index = Array.from(row.children).indexOf(cell);
+const rowIndex = Array.from(rows.children).indexOf(row);
+
+
+switch (key) {
+case "ArrowLeft":  moveLeft(); break;
+case "ArrowRight":  moveRight(); break;
+case "ArrowUp":  moveUp(); break;
+case "ArrowDown":  moveDown(); break;
+default: return true;
+} // switch
+return false;
+
+// navigation
+
+function moveLeft () {
+if (index > 0) row.children[index-1].focus();
+} // moveLeft
+
+function moveRight () {
+if (index < row.children.length-1) row.children[index+1].focus();
+} // moveRight
+
+function moveUp () {
+if (rowIndex > 0) {
+const row = rows.children[rowIndex-1];
+const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
+newCell? newCell.focus() : row.children[0].focus();
+} // if
+} // moveUp
+
+function moveDown () {
+if (rowIndex < rows.children.length-1) {
+const row = rows.children[rowIndex+1];
+const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
+newCell? newCell.focus() : row.children[0].focus();
+} // if
+} // moveDown
+} // _arrowNavigation
+
+function trackFocus (e) {
+const cell = e.target;
+table.querySelectorAll("td").forEach(c => c.tabIndex = -1);
+cell.tabIndex = 0;
+} // trackFocus
 
 } // createTable
 

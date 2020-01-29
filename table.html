@@ -7,17 +7,31 @@
 </head>
 <body>
 
+<<div>
+<label>Enable arrow key navigation: <input id="enableArrowKeyNavigation" type="checkbox" checked></label>
+</div>
+
 <script crossorigin="anonymous" src="createTable.js"></script>
 <script crossorigin="anonymous">
+let table;
+const enableArrowKeyNavigation = document.querySelector("#enableArrowKeyNavigation");
+displayTable (enableArrowKeyNavigation.checked);
+enableArrowKeyNavigation.addEventListener("change", e => displayTable(e.target.checked));
+
+function displayTable (arrowKeyNavigation) {
 const path = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
 
 fetch (path)
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
-}).then (data => document.body.appendChild(createTable(data)))
+}).then (data => {
+if (table) document.body.removeChild(table);
+table = createTable(data, arrowKeyNavigation);
+document.body.appendChild(table);
+})
 .catch(error => alert(`${error.message}\n${error.stack}\n`));
-
+} // displayTable
 </script>
 
 </body>
