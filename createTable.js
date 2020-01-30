@@ -25,12 +25,12 @@ return periodicTable;
 
 function displayElementInfo (cell, elements) {
 const link = cell.querySelector("a");
-console.debug("display link: ", link);
+//console.debug("display link: ", link);
 const atomicNumber = Number(cell.getAttribute("data-number"));
 const element = elements.find(element => element.number === atomicNumber);
 //console.debug("display: ", atomicNumber, element);
 const modal = createModal(getElementInfo(element), periodicTable, link);
-console.debug ("display: ", modal);
+//console.debug ("display: ", modal);
 
 return periodicTable;
 } // displayElementInfo
@@ -181,7 +181,7 @@ const row = cell.parentElement;
 const rows = row.parentElement;
 const index = Array.from(row.children).indexOf(cell);
 const rowIndex = Array.from(rows.children).indexOf(row);
-console.debug("key: ", key, cell);
+//console.debug("key: ", key, cell);
 
 switch (key) {
 case "Enter": displayElementInfo(cell.firstElementChild, periodicTable, cell.firstElementChild); break;
