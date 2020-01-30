@@ -19,7 +19,12 @@ setTimeout (() => table.querySelector("td").focus(), 0);
 } // if
 
 table.addEventListener("click", e => {
-const cell = e.target.closest("td");
+displayElementInfo (e.target.closest("td"));
+});
+return periodicTable;
+
+function displayElementInfo (cell) {
+//const cell = e.target.closest("td");
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.id);
 const element = elements.find(element => element.number === atomicNumber);
@@ -29,8 +34,8 @@ console.log("modal: ", modal);
 periodicTable.appendChild(modal);
 
 modal.querySelector(".close").focus();
-});
-return periodicTable;
+} // displayElementInfo
+
 
 function createBody (body) {
 let rowCount=0, colCount=0;
@@ -168,10 +173,10 @@ const row = cell.parentElement;
 const rows = row.parentElement;
 const index = Array.from(row.children).indexOf(cell);
 const rowIndex = Array.from(rows.children).indexOf(row);
-
+console.debug("key: ", key, cell);
 
 switch (key) {
-case "Enter": cell.dispatchEvent(new CustomEvent("click", {bubbles: true})); break;
+case "Enter": displayElementInfo(cell); return true;
 case "ArrowLeft":  moveLeft(); break;
 case "ArrowRight":  moveRight(); break;
 case "ArrowUp":  moveUp(); break;
