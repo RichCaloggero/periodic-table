@@ -13,28 +13,26 @@ table.appendChild(body);
 periodicTable.appendChild(table);
 
 if (arrowNavigation) {
-table.setAttribute("role", "grid");
+periodicTable.setAttribute("role", "application");
+//table.setAttribute("role", "grid");
 table.addEventListener("keydown", _arrowNavigation);
 table.addEventListener("focusin", trackFocus);
-setTimeout (() => table.querySelector("td").focus(), 0);
+setTimeout (() => table.querySelector("td a").focus(), 0);
 } // if
 
 table.addEventListener("click", e => displayElementInfo (e.target.closest("td"), elements));
 return periodicTable;
 
 function displayElementInfo (cell, elements) {
-console.debug("display: ", cell);
-//const cell = e.target.closest("td");
 const link = cell.querySelector("a");
-const atomicNumber = Number(cell.id);
+console.debug("display link: ", link);
+const atomicNumber = Number(cell.getAttribute("data-number"));
 const element = elements.find(element => element.number === atomicNumber);
-const modal = createModal(getElementInfo(element), arrowNavigation? cell : link);
-console.log("display: ", modal);
+//console.debug("display: ", atomicNumber, element);
+const modal = createModal(getElementInfo(element), periodicTable, link);
+console.debug ("display: ", modal);
 
-periodicTable.appendChild(modal);
-console.debug("display: appended to ", periodicTable);
-
-modal.querySelector(".close").focus();
+return periodicTable;
 } // displayElementInfo
 
 
@@ -59,7 +57,8 @@ col = document.createElement("td");
 
 
 if (element.xpos > colCount) {
-if (arrowNavigation) col.tabIndex = -1;
+col.innerHTML = `<a href="#"></a>`;
+if (arrowNavigation) col.querySelector("a").tabIndex = -1;
 col.setAttribute("colspan", String(element.xpos - colCount));
 col.classList.add("empty");
 colCount = element.xpos;
@@ -67,21 +66,22 @@ row.appendChild(col);
 col = document.createElement("td");
 } // if
 
-let html = `<div class="number">${element.number}</div>
+col.innerHTML = `<a href="#">
+<div class="number">${element.number}</div>
 <div class="name-and-symbol">
 <span class="name">${element.name}</span> <span class="symbol">(${element.symbol})</span>
 </div>
 <div class="mass">${element.atomic_mass}</div>
-`;
+</a>`;
 
 if (arrowNavigation) {
-col.tabIndex = -1;
-col.innerHTML = html;
-} else {
-col.innerHTML = `<a href="#">${html}</a>`;
+col.querySelector("a").tabIndex = -1;
+//col.innerHTML = html;
+//} else {
+//col.innerHTML = `<a href="#">${html}</a>`;
 } // if
 
-col.id = String(element.number);
+col.setAttribute("data-number", String(element.number));
 col.setAttribute("data-group", String(element.xpos));
 col.setAttribute("data-period", String(element.period));
 row.appendChild(col);
@@ -94,17 +94,18 @@ function createHead (head) {
 return head;
 } // createHead
 
-function createModal (body, focusOnClose) {
+function createModal (body, container, focusOnClose) {
 let modal = document.querySelector("#elementInfo");
 if (modal) {
-console.debug("modal: reusing ", modal);
+//console.debug("modal: reusing ", modal);
 modal.querySelector(".body").innerHTML = "";
 modal.querySelector(".body").removeEventListener("click", handleClose);
 } else {
-console.debug("modal: creating modal...");
+//console.debug("modal: creating modal...");
 modal = document.createElement("div");
 modal.id = "elementInfo";
 modal.style.position = "relative";
+modal.setAttribute("role", "document");
 modal.innerHTML = `
 <div role="dialog" aria-labelledby="element-info-title" style="position:absolute; left:0; top:0; z-index:100;">
 <header>
@@ -115,12 +116,14 @@ modal.innerHTML = `
 </div>
 </div>
 `;
+container.appendChild(modal);
 } // if
 
 modal.querySelector(".body").appendChild(body);
-console.debug("modal: appending ", body);
+//console.debug("modal: appending ", body);
 modal.querySelector(".close").addEventListener("click", handleClose);
-console.debug("modal: adding listener ", handleClose);
+modal.querySelector(".close").focus();
+//console.debug("modal: adding listener ", handleClose);
 return modal;
 
 function handleClose (e) {
@@ -173,7 +176,7 @@ return info;
 function _arrowNavigation (e) {
 if (e.altKey || e.shiftKey || e.ctrlKey) return true;
 const key = e.key;
-const cell = e.target;
+const cell = e.target.closest("td");
 const row = cell.parentElement;
 const rows = row.parentElement;
 const index = Array.from(row.children).indexOf(cell);
@@ -181,7 +184,7 @@ const rowIndex = Array.from(rows.children).indexOf(row);
 console.debug("key: ", key, cell);
 
 switch (key) {
-case "Enter": cell.click(); break;
+case "Enter": displayElementInfo(cell.firstElementChild, periodicTable, cell.firstElementChild); break;
 
 case "ArrowLeft":  moveLeft(); break;
 case "ArrowRight":  moveRight(); break;
@@ -194,18 +197,18 @@ return false;
 // navigation
 
 function moveLeft () {
-if (index > 0) row.children[index-1].focus();
+if (index > 0) row.children[index-1].firstElementChild.focus();
 } // moveLeft
 
 function moveRight () {
-if (index < row.children.length-1) row.children[index+1].focus();
+if (index < row.children.length-1) row.children[index+1].firstElementChild.focus();
 } // moveRight
 
 function moveUp () {
 if (rowIndex > 0) {
 const row = rows.children[rowIndex-1];
 const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
-newCell? newCell.focus() : row.children[0].focus();
+newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
 } // if
 } // moveUp
 
@@ -213,15 +216,15 @@ function moveDown () {
 if (rowIndex < rows.children.length-1) {
 const row = rows.children[rowIndex+1];
 const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
-newCell? newCell.focus() : row.children[0].focus();
+newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
 } // if
 } // moveDown
 } // _arrowNavigation
 
 function trackFocus (e) {
-const cell = e.target;
-table.querySelectorAll("td").forEach(c => c.tabIndex = -1);
-cell.tabIndex = 0;
+const link = e.target;
+table.querySelectorAll("td a").forEach(link => link.tabIndex = -1);
+link.tabIndex = 0;
 } // trackFocus
 
 } // createTable
