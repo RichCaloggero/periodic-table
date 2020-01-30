@@ -3,9 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-<title>Table...</title>
+<title>Periodic Table of the Elements...</title>
+
+<style>
+#periodicTable table {
+/*  table-layout: fixed;*/
+  width: 100%;
+  border-collapse: collapse;
+  border: 3px solid purple;
+}
+
+#periodicTable th, #periodicTable td {
+padding: 2px;
+}
+
+#periodicTable tbody tr:nth-child(odd) {
+  background-color: red;
+}
+
+#periodicTable tbody tr:nth-child(even) {
+  background-color: blue;
+}
+</style>
 </head>
 <body>
+<div role="status" id="status"></div>
 
 <<div>
 <label>Enable arrow key navigation: <input id="enableArrowKeyNavigation" type="checkbox" checked></label>
@@ -19,9 +41,9 @@ displayTable (enableArrowKeyNavigation.checked);
 enableArrowKeyNavigation.addEventListener("change", e => displayTable(e.target.checked));
 
 function displayTable (arrowKeyNavigation) {
-const path = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
+const data = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
 
-fetch (path)
+fetch (data)
 .then(response => {
 if (response.ok) return response.json();
 else throw new Error(response.error);
@@ -29,10 +51,20 @@ else throw new Error(response.error);
 if (table) {
 table.remove();
 } // if
+
 table = createPeriodicTable(data, arrowKeyNavigation);
 document.body.appendChild(table);
+table.id = "periodicTable";
+statusMessage("Ready.");
 }).catch(error => alert(`${error.message}\n${error.stack}\n`));
 } // displayTable
+
+
+function statusMessage (text) {
+const status = document.querySelector("#status");
+status.textContent = "";
+status.textContent = text;
+} // statusMessage
 </script>
 
 </body>

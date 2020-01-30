@@ -7,6 +7,7 @@ const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 const periodicTable = document.createElement("div");
 
+periodicTable.classList.add("periodicTable");
 table.appendChild(head);
 table.appendChild(body);
 periodicTable.appendChild(table);
