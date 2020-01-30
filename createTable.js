@@ -1,12 +1,16 @@
 // Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
 
-function createTable (data, arrowNavigation = false) {
+function createPeriodicTable (data, arrowNavigation = false) {
 const elements = data.elements;
 const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
+const periodicTable = document.createElement("div");
+
 table.appendChild(head);
 table.appendChild(body);
+periodicTable.appendChild(table);
+
 if (arrowNavigation) {
 table.setAttribute("role", "grid");
 table.addEventListener("keydown", _arrowNavigation);
@@ -19,15 +23,14 @@ const cell = e.target.closest("td");
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.id);
 const element = elements.find(element => element.number === atomicNumber);
-const elementInfo = createModal(
-getElementInfo(element),
-arrowNavigation? cell : link
-); // createModal
-document.body.appendChild(elementInfo);
+modal = createModal(getElementInfo(element), arrowNavigation? cell : link);
+console.log("modal: ", modal);
 
-elementInfo.querySelector(".close").focus();
+periodicTable.appendChild(modal);
+
+modal.querySelector(".close").focus();
 });
-return table;
+return periodicTable;
 
 function createBody (body) {
 let rowCount=0, colCount=0;
@@ -86,8 +89,13 @@ return head;
 } // createHead
 
 function createModal (body, focusOnClose) {
-const modal = document.createElement("div");
-modal.id = "element-info";
+let modal = document.querySelector("#elementInfo");
+if (modal) {
+modal.querySelector(".body").innerHTML = "";
+modal.querySelector(".body").removeEventListener("click", handleClose);
+} else {
+modal = document.createElement("div");
+modal.id = "elementInfo";
 modal.style.position = "relative";
 modal.innerHTML = `
 <div role="dialog" aria-labelledby="element-info-title" style="position:absolute; left:0; top:0; z-index:100;">
@@ -99,14 +107,16 @@ modal.innerHTML = `
 </div>
 </div>
 `;
+} // if
 
 modal.querySelector(".body").appendChild(body);
-modal.querySelector(".close").addEventListener("click", () => {
-focusOnClose.focus();
-document.body.removeChild(modal);
-}); // close
-
+modal.querySelector(".close").addEventListener("click", handleClose);
 return modal;
+
+function handleClose (e) {
+focusOnClose.focus();
+modal.remove();
+} // handleClose
 } // createModal
 
 function getElementInfo (data) {
@@ -161,6 +171,7 @@ const rowIndex = Array.from(rows.children).indexOf(row);
 
 
 switch (key) {
+case "Enter": cell.dispatchEvent(new CustomEvent("click", {bubbles: true})); break;
 case "ArrowLeft":  moveLeft(); break;
 case "ArrowRight":  moveRight(); break;
 case "ArrowUp":  moveUp(); break;

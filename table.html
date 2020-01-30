@@ -26,11 +26,12 @@ fetch (path)
 if (response.ok) return response.json();
 else throw new Error(response.error);
 }).then (data => {
-if (table) document.body.removeChild(table);
-table = createTable(data, arrowKeyNavigation);
+if (table) {
+table.remove();
+} // if
+table = createPeriodicTable(data, arrowKeyNavigation);
 document.body.appendChild(table);
-})
-.catch(error => alert(`${error.message}\n${error.stack}\n`));
+}).catch(error => alert(`${error.message}\n${error.stack}\n`));
 } // displayTable
 </script>
 
