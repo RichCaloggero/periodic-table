@@ -18,20 +18,20 @@ table.addEventListener("focusin", trackFocus);
 setTimeout (() => table.querySelector("td").focus(), 0);
 } // if
 
-table.addEventListener("click", e => {
-displayElementInfo (e.target.closest("td"));
-});
+table.addEventListener("click", e => displayElementInfo (e.target.closest("td"), elements));
 return periodicTable;
 
-function displayElementInfo (cell) {
+function displayElementInfo (cell, elements) {
+console.debug("display: ", cell);
 //const cell = e.target.closest("td");
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.id);
 const element = elements.find(element => element.number === atomicNumber);
-modal = createModal(getElementInfo(element), arrowNavigation? cell : link);
-console.log("modal: ", modal);
+const modal = createModal(getElementInfo(element), arrowNavigation? cell : link);
+console.log("display: ", modal);
 
 periodicTable.appendChild(modal);
+console.debug("display: appended to ", periodicTable);
 
 modal.querySelector(".close").focus();
 } // displayElementInfo
@@ -96,9 +96,11 @@ return head;
 function createModal (body, focusOnClose) {
 let modal = document.querySelector("#elementInfo");
 if (modal) {
+console.debug("modal: reusing ", modal);
 modal.querySelector(".body").innerHTML = "";
 modal.querySelector(".body").removeEventListener("click", handleClose);
 } else {
+console.debug("modal: creating modal...");
 modal = document.createElement("div");
 modal.id = "elementInfo";
 modal.style.position = "relative";
@@ -115,7 +117,9 @@ modal.innerHTML = `
 } // if
 
 modal.querySelector(".body").appendChild(body);
+console.debug("modal: appending ", body);
 modal.querySelector(".close").addEventListener("click", handleClose);
+console.debug("modal: adding listener ", handleClose);
 return modal;
 
 function handleClose (e) {
@@ -176,7 +180,8 @@ const rowIndex = Array.from(rows.children).indexOf(row);
 console.debug("key: ", key, cell);
 
 switch (key) {
-case "Enter": displayElementInfo(cell); return true;
+case "Enter": cell.click(); break;
+
 case "ArrowLeft":  moveLeft(); break;
 case "ArrowRight":  moveRight(); break;
 case "ArrowUp":  moveUp(); break;
