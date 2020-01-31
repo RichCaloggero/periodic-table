@@ -6,6 +6,7 @@ const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 const periodicTable = document.createElement("div");
+let keyboardCommandsModal = keyboardCommands();
 
 periodicTable.classList.add("periodicTable");
 table.appendChild(head);
@@ -14,6 +15,7 @@ periodicTable.appendChild(table);
 
 if (arrowNavigation) {
 periodicTable.setAttribute("role", "application");
+periodicTable.appendChild (keyboardCommandsModal);
 table.addEventListener("keydown", _arrowNavigation);
 table.addEventListener("focusin", trackFocus);
 setTimeout (() => table.querySelector("td a").focus(), 0);
@@ -52,8 +54,9 @@ col = document.createElement("td");
 
 
 if (element.xpos > colCount) {
-col.innerHTML = `<a href="#"></a>`;
-if (arrowNavigation) col.querySelector("a").tabIndex = -1;
+if (arrowNavigation) {
+col.innerHTML = `<a tabindex="-1" href="#"></a>`;
+} // if
 col.setAttribute("colspan", String(element.xpos - colCount));
 col.classList.add("empty");
 colCount = element.xpos;
@@ -177,6 +180,8 @@ const rowIndex = Array.from(rows.children).indexOf(row);
 console.debug("key: ", key, cell);
 
 switch (key) {
+case "h": case "F1": showKeyboardHelp(cell); break;
+
 case "Enter": displayElementInfo(cell.firstElementChild, periodicTable, cell.firstElementChild); break;
 
 case "Home": moveRowStart(); break;
@@ -195,13 +200,31 @@ return false;
 
 // navigation
 
+function showKeyboardHelp (focusOnClose) {
+const closeButton = keyboardCommandsModal.querySelector(".close");
+keyboardCommandsModal.hidden = false;
+closeButton.addEventListener("click", handleClose);
+closeButton.focus();
+
+function handleClose () {
+keyboardCommandsModal.hidden = true;
+closeButton.removeEventListener("click", handleClose);
+focusOnClose.firstElementChild.focus();
+} // handleClose
+} // showKeyboardHelp
+
+
 function moveRowStart () {row.children[0].firstElementChild.focus();}
 function moveRowEnd () {row.children[row.children.length-1].firstElementChild.focus();}
 
 function moveGroupStart () {
-const row = rows.children[0];
+for (let row of Array.from(rows.children)) {
 const newCell = findCellWithGroup(row, Number(cell.dataset.group));
-(newCell? newCell : row[0]).firstElementChild.focus();
+if (newCell) {
+newCell.firstElementChild.focus();
+return;
+} // if
+} // for
 } // moveGroupStart
 
 function moveGroupEnd () {
@@ -244,6 +267,32 @@ const link = e.target;
 table.querySelectorAll("td a").forEach(link => link.tabIndex = -1);
 link.tabIndex = 0;
 } // trackFocus
+
+function keyboardCommands () {
+const modal = document.createElement("div");
+modal.innerHTML = `<div role="dialog" aria-labelledby="keyboardCommands-title">
+<header>
+<h2 id="keyboardCommands-title">Keyboard Commands</h2>
+<button class="close">close</button>
+</header>
+<table>
+<tr><th>Key</th><th>Action</th></tr>
+<tr><th>right arrow</th><td>right 1 cell</td></tr>
+<tr><th>left arrow</th><td>left 1 cell</td></tr>
+<tr><th>up arrow</th><td>up 1 cell (beginning of row if no cell above)</td></tr>
+<tr><th>down arrow</th><td>down 1 cell</td></tr>
+<tr><th>home</th><td>first cell in row</td></tr>
+<tr><th>end</th><td>last cell in row</td></tr>
+<tr><th>page up</th><td>first cell in column</td></tr>
+<tr><th>page down</th><td>last cell in column</td></tr>
+</table>
+</div>
+`;
+
+modal.setAttribute("role", "document");
+return modal;
+} // keyboardCommands
+
 
 } // createTable
 
