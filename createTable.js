@@ -174,10 +174,16 @@ const row = cell.parentElement;
 const rows = row.parentElement;
 const index = Array.from(row.children).indexOf(cell);
 const rowIndex = Array.from(rows.children).indexOf(row);
-//console.debug("key: ", key, cell);
+console.debug("key: ", key, cell);
 
 switch (key) {
 case "Enter": displayElementInfo(cell.firstElementChild, periodicTable, cell.firstElementChild); break;
+
+case "Home": moveRowStart(); break;
+case "End": moveRowEnd(); break;
+
+case "PageUp": moveGroupStart(); break;
+case "PageDown": moveGroupEnd(); break;
 
 case "ArrowLeft":  moveLeft(); break;
 case "ArrowRight":  moveRight(); break;
@@ -188,6 +194,21 @@ default: return true;
 return false;
 
 // navigation
+
+function moveRowStart () {row.children[0].firstElementChild.focus();}
+function moveRowEnd () {row.children[row.children.length-1].firstElementChild.focus();}
+
+function moveGroupStart () {
+const row = rows.children[0];
+const newCell = findCellWithGroup(row, Number(cell.dataset.group));
+(newCell? newCell : row[0]).firstElementChild.focus();
+} // moveGroupStart
+
+function moveGroupEnd () {
+const row = rows.children[rows.children.length-1];
+const newCell = findCellWithGroup(row, Number(cell.dataset.group));
+(newCell? newCell : row[0]).firstElementChild.focus();
+} // moveGroupEnd
 
 function moveLeft () {
 if (index > 0) row.children[index-1].firstElementChild.focus();
@@ -200,19 +221,23 @@ if (index < row.children.length-1) row.children[index+1].firstElementChild.focus
 function moveUp () {
 if (rowIndex > 0) {
 const row = rows.children[rowIndex-1];
-const newCell = Array.from(row.children).find(c => Number(c.dataset.group) === Number(cell.dataset.group));
-newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
+const newCell = findCellWithGroup(row, Number(cell.dataset.group));
+(newCell? newCell : row.children[0]).firstElementChild.focus();
 } // if
 } // moveUp
 
 function moveDown () {
 if (rowIndex < rows.children.length-1) {
 const row = rows.children[rowIndex+1];
-const newCell = Array.from(row.children).find(c => Number(c.dataset.group) === Number(cell.dataset.group));
-newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
+const newCell = findCellWithGroup(row, Number(cell.dataset.group));
+(newCell? newCell : row.children[0]).firstElementChild.focus();
 } // if
 } // moveDown
+
+function findCellWithGroup (row, group) {return Array.from(row.children).find(c => Number(c.dataset.group) === group);}
 } // _arrowNavigation
+
+
 
 function trackFocus (e) {
 const link = e.target;
