@@ -14,7 +14,6 @@ periodicTable.appendChild(table);
 
 if (arrowNavigation) {
 periodicTable.setAttribute("role", "application");
-//table.setAttribute("role", "grid");
 table.addEventListener("keydown", _arrowNavigation);
 table.addEventListener("focusin", trackFocus);
 setTimeout (() => table.querySelector("td a").focus(), 0);
@@ -25,13 +24,9 @@ return periodicTable;
 
 function displayElementInfo (cell, elements) {
 const link = cell.querySelector("a");
-//console.debug("display link: ", link);
-const atomicNumber = Number(cell.getAttribute("data-number"));
+const atomicNumber = Number(cell.dataset.number);
 const element = elements.find(element => element.number === atomicNumber);
-//console.debug("display: ", atomicNumber, element);
 const modal = createModal(getElementInfo(element), periodicTable, link);
-//console.debug ("display: ", modal);
-
 return periodicTable;
 } // displayElementInfo
 
@@ -66,7 +61,8 @@ row.appendChild(col);
 col = document.createElement("td");
 } // if
 
-col.innerHTML = `<a href="#">
+col.innerHTML =
+`<a href="#">
 <div class="number">${element.number}</div>
 <div class="name-and-symbol">
 <span class="name">${element.name}</span> <span class="symbol">(${element.symbol})</span>
@@ -76,14 +72,11 @@ col.innerHTML = `<a href="#">
 
 if (arrowNavigation) {
 col.querySelector("a").tabIndex = -1;
-//col.innerHTML = html;
-//} else {
-//col.innerHTML = `<a href="#">${html}</a>`;
 } // if
 
-col.setAttribute("data-number", String(element.number));
-col.setAttribute("data-group", String(element.xpos));
-col.setAttribute("data-period", String(element.period));
+col.dataset.number = element.number;
+col.dataset.group = element.xpos;
+col.dataset.period = element.period;
 row.appendChild(col);
 }); // forEach element
 
@@ -207,7 +200,7 @@ if (index < row.children.length-1) row.children[index+1].firstElementChild.focus
 function moveUp () {
 if (rowIndex > 0) {
 const row = rows.children[rowIndex-1];
-const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
+const newCell = Array.from(row.children).find(c => Number(c.dataset.group) === Number(cell.dataset.group));
 newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
 } // if
 } // moveUp
@@ -215,7 +208,7 @@ newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.f
 function moveDown () {
 if (rowIndex < rows.children.length-1) {
 const row = rows.children[rowIndex+1];
-const newCell = Array.from(row.children).find(c => Number(c.getAttribute("data-group")) === Number(cell.getAttribute("data-group")));
+const newCell = Array.from(row.children).find(c => Number(c.dataset.group) === Number(cell.dataset.group));
 newCell? newCell.firstElementChild.focus() : row.children[0].firstElementChild.focus();
 } // if
 } // moveDown
