@@ -6,7 +6,7 @@ const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 const periodicTable = document.createElement("div");
-let keyboardCommandsModal = keyboardCommands();
+let keyboardHelpModal;
 
 periodicTable.classList.add("periodicTable");
 table.appendChild(head);
@@ -15,7 +15,6 @@ periodicTable.appendChild(table);
 
 if (arrowNavigation) {
 periodicTable.setAttribute("role", "application");
-periodicTable.appendChild (keyboardCommandsModal);
 table.addEventListener("keydown", _arrowNavigation);
 table.addEventListener("focusin", trackFocus);
 setTimeout (() => table.querySelector("td a").focus(), 0);
@@ -28,7 +27,9 @@ function displayElementInfo (cell, elements) {
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.dataset.number);
 const element = elements.find(element => element.number === atomicNumber);
-const modal = createModal(getElementInfo(element), periodicTable, link);
+const modal = createModal("Element Info", getElementInfo(element), periodicTable, "elementInfo",
+() => {modal.hidden = true; link.focus();},
+".summary");
 return periodicTable;
 } // displayElementInfo
 
@@ -90,42 +91,62 @@ function createHead (head) {
 return head;
 } // createHead
 
-function createModal (body, container, focusOnClose) {
-let modal = document.querySelector("#elementInfo");
-if (modal) {
-//console.debug("modal: reusing ", modal);
-modal.querySelector(".body").innerHTML = "";
-modal.querySelector(".body").removeEventListener("click", handleClose);
+function createModal (title, body, container, _modal, _close, _messageSelector) {
+console.debug("createModal: ", title, body, container, _modal, _close);
+let modal;
+ let id;
+if (typeof(_modal) === "string" || _modal instanceof String) {
+modal = document.querySelector(`#${_modal}`);
+id = _modal;
 } else {
-//console.debug("modal: creating modal...");
+modal = _modal;
+} // if
+
+if (modal) {
+console.debug("-- reusing ", modal);
+modal.querySelector(".body").innerHTML = "";
+} else {
 modal = document.createElement("div");
-modal.id = "elementInfo";
+if (id) modal.id = id;
 modal.style.position = "relative";
 modal.setAttribute("role", "document");
 modal.innerHTML = `
-<div role="dialog" aria-labelledby="element-info-title" style="position:absolute; left:0; top:0; z-index:100;">
+<div role="dialog" aria-labelledby="modal-title" style="position:absolute; left:0; top:0; z-index:100;">
 <header>
-<h2 id="element-info-title">Element Information</h2>
+<h2 id="modal-title">${title}</h2>
 <button class="close">Close</button>
 </header>
 <div class="body">
 </div>
 </div>
 `;
-container.appendChild(modal);
+console.debug("modal: created modal:", modal.hidden);
+if (container) container.appendChild(modal);
 } // if
 
-modal.querySelector(".body").appendChild(body);
-//console.debug("modal: appending ", body);
-modal.querySelector(".close").addEventListener("click", handleClose);
-modal.querySelector(".close").focus();
-//console.debug("modal: adding listener ", handleClose);
-return modal;
+const _body = modal.querySelector(".body");
+const closeButton = modal.querySelector(".close");
 
-function handleClose (e) {
-focusOnClose.focus();
-modal.remove();
-} // handleClose
+if (body) {
+_body.innerHTML = "";
+_body.appendChild(body);
+if (_messageSelector) {
+_body.querySelector(_messageSelector).id = "modal-message";
+modal.firstElementChild.setAttribute("aria-describedby", "modal-message");
+} // if
+
+modal.hidden = false;
+console.debug ("- created body", modal.hidden);
+} // if
+
+if (_close instanceof Function) {
+if (modal._close) modal.removeEventListener("click", modal._close);
+modal._close = _close;
+closeButton.addEventListener("click", _close);
+} // if
+
+closeButton.focus();
+return modal;
 } // createModal
 
 function getElementInfo (data) {
@@ -158,7 +179,7 @@ info.innerHTML = `
 </div>
 
 <div class="properties">
-<h2>Properties</h2>
+<h3>Properties</h3>
 <table>
 <tr><th>Property</th><th>value</th></tr>
 ${body}
@@ -182,8 +203,6 @@ console.debug("key: ", key, cell);
 switch (key) {
 case "h": case "F1": showKeyboardHelp(cell); break;
 
-case "Enter": displayElementInfo(cell.firstElementChild, periodicTable, cell.firstElementChild); break;
-
 case "Home": moveRowStart(); break;
 case "End": moveRowEnd(); break;
 
@@ -200,17 +219,10 @@ return false;
 
 // navigation
 
-function showKeyboardHelp (focusOnClose) {
-const closeButton = keyboardCommandsModal.querySelector(".close");
-keyboardCommandsModal.hidden = false;
-closeButton.addEventListener("click", handleClose);
-closeButton.focus();
-
-function handleClose () {
-keyboardCommandsModal.hidden = true;
-closeButton.removeEventListener("click", handleClose);
-focusOnClose.firstElementChild.focus();
-} // handleClose
+function showKeyboardHelp (cell) {
+keyboardHelpModal = createModal ("Keyboard Help", getKeyboardCommands(), periodicTable, keyboardHelpModal,
+() => {keyboardHelpModal.hidden = true; cell.firstElementChild.focus();}
+);
 } // showKeyboardHelp
 
 
@@ -268,14 +280,9 @@ table.querySelectorAll("td a").forEach(link => link.tabIndex = -1);
 link.tabIndex = 0;
 } // trackFocus
 
-function keyboardCommands () {
-const modal = document.createElement("div");
-modal.innerHTML = `<div role="dialog" aria-labelledby="keyboardCommands-title">
-<header>
-<h2 id="keyboardCommands-title">Keyboard Commands</h2>
-<button class="close">close</button>
-</header>
-<table>
+function getKeyboardCommands () {
+const table = document.createElement("table");
+table.innerHTML = `
 <tr><th>Key</th><th>Action</th></tr>
 <tr><th>right arrow</th><td>right 1 cell</td></tr>
 <tr><th>left arrow</th><td>left 1 cell</td></tr>
@@ -285,13 +292,10 @@ modal.innerHTML = `<div role="dialog" aria-labelledby="keyboardCommands-title">
 <tr><th>end</th><td>last cell in row</td></tr>
 <tr><th>page up</th><td>first cell in column</td></tr>
 <tr><th>page down</th><td>last cell in column</td></tr>
-</table>
-</div>
 `;
 
-modal.setAttribute("role", "document");
-return modal;
-} // keyboardCommands
+return table;
+} // getKeyboardCommands
 
 
 } // createTable
