@@ -91,29 +91,21 @@ function createHead (head) {
 return head;
 } // createHead
 
-function createModal (title, body, container, _modal, _close, _messageSelector) {
-console.debug("createModal: ", title, body, container, _modal, _close);
-let modal;
- let id;
-if (typeof(_modal) === "string" || _modal instanceof String) {
-modal = document.querySelector(`#${_modal}`);
-id = _modal;
-} else {
-modal = _modal;
-} // if
-
+function createModal (title, body, container, _id, _close, _messageSelector) {
+console.debug("createModal: ", title, body, container, _id, _close);
+let modal = document.querySelector(`#${_id}`);
 if (modal) {
 console.debug("-- reusing ", modal);
 modal.querySelector(".body").innerHTML = "";
 } else {
 modal = document.createElement("div");
-if (id) modal.id = id;
+if (_id) modal.id = _id;
 modal.style.position = "relative";
 modal.setAttribute("role", "document");
 modal.innerHTML = `
-<div role="dialog" aria-labelledby="modal-title" style="position:absolute; left:0; top:0; z-index:100;">
+<div role="dialog" aria-labelledby="${modal.id}-title" style="position:absolute; left:0; top:0; z-index:100;">
 <header>
-<h2 id="modal-title">${title}</h2>
+<h2 id="${modal.id}-title">${title}</h2>
 <button class="close">Close</button>
 </header>
 <div class="body">
@@ -122,6 +114,7 @@ modal.innerHTML = `
 `;
 console.debug("modal: created modal:", modal.hidden);
 if (container) container.appendChild(modal);
+modal.querySelector(".close").addEventListener("keydown", e => {if (e.key === "Escape") e.target.click();});
 } // if
 
 const _body = modal.querySelector(".body");
@@ -131,12 +124,11 @@ if (body) {
 _body.innerHTML = "";
 _body.appendChild(body);
 if (_messageSelector) {
-_body.querySelector(_messageSelector).id = "modal-message";
-modal.firstElementChild.setAttribute("aria-describedby", "modal-message");
+_body.querySelector(_messageSelector).id = `${modal.id}-message`;
+modal.firstElementChild.setAttribute("aria-describedby", `${modal.id}-message`);
 } // if
 
 modal.hidden = false;
-console.debug ("- created body", modal.hidden);
 } // if
 
 if (_close instanceof Function) {
@@ -220,7 +212,7 @@ return false;
 // navigation
 
 function showKeyboardHelp (cell) {
-keyboardHelpModal = createModal ("Keyboard Help", getKeyboardCommands(), periodicTable, keyboardHelpModal,
+keyboardHelpModal = createModal ("Keyboard Help", getKeyboardCommands(), periodicTable, "keyboardHelp",
 () => {keyboardHelpModal.hidden = true; cell.firstElementChild.focus();}
 );
 } // showKeyboardHelp
