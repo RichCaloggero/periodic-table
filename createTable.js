@@ -284,6 +284,9 @@ table.innerHTML = `
 <tr><th>end</th><td>last cell in row</td></tr>
 <tr><th>page up</th><td>first cell in column</td></tr>
 <tr><th>page down</th><td>last cell in column</td></tr>
+<tr><th>enter</th><td>display information about currently focused element</td></tr>
+<tr><th>F1 or "h"</th><td>display this help dialog</td></tr>
+<tr><th>escape</th><td>close dialog window</td></tr>
 `;
 
 return table;
