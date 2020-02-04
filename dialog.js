@@ -1,6 +1,12 @@
 { // module begin
+let $ = document.querySelector;
+
 class HtmlDialog extends HTMLElement {
 static get is () {return "html-dialog";}
+static get observedAttributes () {
+return ["title", "message", "return-to"]
+} // get observedAttributes
+
 
 static get template () {
 return `<div class="dialog" style="position:relative;" role="document">
@@ -21,25 +27,57 @@ return `<div class="dialog" style="position:relative;" role="document">
 
 constructor () {
 super ();
-} // constructor
 
+this._observer = new MutationObserver(() => {
+    });
+} // constructor
+  
 connectedCallback () {
 const open = this.hasAttribute("open");
 const root = this.attachShadow({mode: "open"});
+this.$ = root.querySelector.bind(root);
+
 const div = document.createElement("div");
+
+this._observer.observe(this, {
+childList: true,
+characterData: true,
+subtree: true
+});
+
 div.hidden = true;
 div.innerHTML = HtmlDialog.template;
-div.querySelector("#dialog-title").textContent = this.getAttribute("title");
-div.querySelector("#dialog-message").textContent = this.getAttribute("message");
 root.appendChild(div);
 
-div.querySelector(".close").addEventListener ("click", () => this._close());
+this.$("#dialog-title").textContent = this.getAttribute("title");
+this.$("#dialog-message").textContent = this.getAttribute("message");
+
+this.$(".close").addEventListener ("click", () => this._close());
 div.addEventListener("keydown", e => {
 if (e.key === "Escape" && !e.altKey && !e.ctrlKey && !e.shiftKey) this._close();
 });
 
 if (open) this.open();
 } // connectedCallback
+
+  disconnectedCallback() {
+    this._observer.disconnect();
+  } // disconnectedCallback
+
+set title (value) {this.setAttribute("title", value);}
+set message (value) {this.setAttribute("message", value);}
+
+  attributeChangedCallback(name, oldValue, newValue) {
+//alert (`changed: ${name} to ${newValue}`);
+const value = newValue;
+
+switch (name) {
+case "title": this.$("#dialog-title").textContent = value; break;
+case "message": this.$("#dialog-message").textContent = value; break;
+} // switch
+return value;
+} // attributeChangedCallback
+
 
 open (message) {
 const container = this.shadowRoot.firstElementChild;
@@ -57,11 +95,11 @@ if (this.hasAttribute("return-focus")) document.querySelector(this.getAttribute(
 this.removeAttribute("open");
 } // _close
 
-triggerMessage () {
-const message = this.shadowRoot.querySelector("slot");
-message.innerHTML = message.innerHTML;
-alert(message.innerHTML);
-} // triggerMessage
 } // class HtmlDialog
 customElements.define(HtmlDialog.is, HtmlDialog);
+
+function _$ (container) {
+return (() => container.querySelector);
+} // _$
+
 } // module end

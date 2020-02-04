@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
 <title>Test...</title>
 </head>
 <body>
@@ -15,20 +16,26 @@
 const launchDialog = document.querySelector("#launchDialog");
 const dialog = document.createElement("html-dialog");
 console.debug(`dialog created: ${launchDialog}, ${dialog}`);
-dialog.setAttribute("title", "My Test Dialog");
-dialog.setAttribute("message", "This is a test of my dialog webcomponent. I am creating the dialog via js.");
 dialog.setAttribute("return-focus", "#launchDialog");
 
 dialog.innerHTML = `<h3>Test Content</h3>
 <p>... this is test dialog content ...</p>
 <p>-- end --</p>
 `;
-console.debug("- attributes set");
+//console.debug("- attributes set");
 document.body.appendChild(dialog);
-console.debug("- appended...");
+//console.debug("- appended...");
 
+let count = 0;
 launchDialog.addEventListener("click", () => {
+count += 1;
+
+if (count === 1) {
 dialog.open();
+} else {
+dialog.title = "my test dialog";
+dialog.message = "This is my dialog webcomponent.";
+} // if
 });
 </script>
 
