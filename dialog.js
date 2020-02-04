@@ -68,16 +68,16 @@ set title (value) {this.setAttribute("title", value);}
 set message (value) {this.setAttribute("message", value);}
 
   attributeChangedCallback(name, oldValue, newValue) {
-//alert (`changed: ${name} to ${newValue}`);
+console.debug(`changed: ${name} to ${newValue}`);
 const value = newValue;
+const selector = `#dialog-${name}`;
+const propertyName = `#_${name}`;
 
-switch (name) {
-case "title": this.$("#dialog-title").textContent = value; break;
-case "message": this.$("#dialog-message").textContent = value; break;
-} // switch
-return value;
+this[propertyName] = value;
+if (this.shadowRoot && this.$(selector)) {
+this.$(selector).textContent = value;
+} // if
 } // attributeChangedCallback
-
 
 open (message) {
 const container = this.shadowRoot.firstElementChild;

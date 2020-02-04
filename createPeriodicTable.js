@@ -6,17 +6,22 @@ const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 const periodicTable = document.createElement("div");
-const dialog = document.createElement("html-dialog")
-dialog.id = "element-info";
-periodicTable.appendChild(dialog);
-
 
 periodicTable.classList.add("periodicTable");
 table.appendChild(head);
 table.appendChild(body);
 periodicTable.appendChild(table);
 
+const elementInfo = document.createElement("html-dialog")
+elementInfo.id = "element-info";
+periodicTable.appendChild(elementInfo);
+
 if (arrowNavigation) {
+const keyboardHelp = document.createElement("html-dialog")
+keyboardHelp.id = "keyboard-help";
+keyboardHelp.title = "Keyboard Help";
+keyboardHelp.appendChild(getKeyboardCommands());
+periodicTable.appendChild(keyboardHelp);
 periodicTable.setAttribute("role", "application");
 
 table.addEventListener("keydown", _arrowNavigation);
@@ -215,9 +220,9 @@ return false;
 // navigation
 
 function showKeyboardHelp (cell) {
-keyboardHelpModal = createModal ("Keyboard Help", getKeyboardCommands(), periodicTable, "keyboardHelp",
-() => {keyboardHelpModal.hidden = true; cell.firstElementChild.focus();}
-);
+const keyboardHelp = periodicTable.querySelector("#keyboard-help");
+keyboardHelp.close = () => cell.firstElementChild.focus();
+keyboardHelp.open();
 } // showKeyboardHelp
 
 
