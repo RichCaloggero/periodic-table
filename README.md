@@ -1,4 +1,26 @@
-# Periodic-Table-JSON
+# Accessible Periodic Table
+
+Simple example of how one might go about creating a periodic table that is accessible.
+
+It operates in two modes:
+
+- default mode (more screen reader accessible)
+   + simple html table
+   + no explicit keyboard access (screen reader provides it's own table navigation commands)
+   + press enter when screen reader is running to get info about an element (most will synthesize a click for you)
+- keyboard navigation mode
+   + provides arrow key navigation around the table
+- minimal formating via stylesheet
+- no attempt to colorize (seems to be many common color schemes, but no "standard" one)
+   + should be straightforward to add via syltsheet
+
+[See it running here](./periodic-table.html)
+
+[Run the Demo]
+
+## Periodic-Table-JSON
+Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
+
 A json of the entire periodic table. Feel free to use it in your projects.
 
 Temperatures such as boiling points and melting points are given in degrees kelvin.  Densities are given in g/L and molar heat in (mol*K)
