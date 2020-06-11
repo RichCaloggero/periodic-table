@@ -33,31 +33,16 @@ padding: 2px;
 
 <script crossorigin="anonymous" src="dialog.js"></script>
 <script crossorigin="anonymous" src="createPeriodicTable.js"></script>
+
 <script crossorigin="anonymous">
+const dataURL = "./periodicTableData.json";
+//const dataURL = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
 let table;
 const enableArrowKeyNavigation = document.querySelector("#enableArrowKeyNavigation");
 const container = document.querySelector("#container");
-displayTable (enableArrowKeyNavigation.checked);
-enableArrowKeyNavigation.addEventListener("change", e => displayTable(e.target.checked));
 
-function displayTable (arrowKeyNavigation) {
-const data = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
-
-fetch (data)
-.then(response => {
-if (response.ok) return response.json();
-else throw new Error(response.error);
-}).then (data => {
-if (table) {
-table.remove();
-} // if
-
-table = createPeriodicTable(data, arrowKeyNavigation);
-container.appendChild(table);
-table.id = "periodicTable";
-statusMessage("Ready.");
-}).catch(error => alert(`${error.message}\n${error.stack}\n`));
-} // displayTable
+displayTable (dataURL, enableArrowKeyNavigation.checked, statusMessage, container);
+enableArrowKeyNavigation.addEventListener("change", e => displayTable(dataURL, e.target.checked, statusMessage, container));
 
 
 function statusMessage (text) {

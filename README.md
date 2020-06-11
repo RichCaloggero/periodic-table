@@ -1,6 +1,6 @@
 # Accessible Periodic Table
 
-Simple example of how one might go about creating a periodic table that is accessible.
+Example of how one might go about creating a periodic table that is accessible.
 
 It operates in two modes:
 
@@ -16,9 +16,35 @@ It operates in two modes:
 
 [See it running here](./periodic-table.html)
 
-[Run the Demo]
+## Get this working in your own project
+
+- based on public domain data availabel at https://github.com/Bowserinator/Periodic-Table-JSON
+
+To use the table generator:
+
+- include dialog.js and createPeriodicTable.js in your HTML file:
+   + `script src="dialog.js"></script>`
+- create a checkbox element to select mode (i.e. normal, or full keyboard navigation):
+   + ```
+<div>
+<label>Check this to enable full keyboard navigation:
+<input autofocus id="enableArrowKeyNavigation" type="checkbox">
+(focus will automatically shift to the first cell of the table)
+</label></div>
+```
+- call displayPeriodicTable as follows (all arguments are required):
+   + displayPeriodicTable(
+dataURL // where the JSON data resides
+mode, // true to enable full keyboard navigation, false otherwise
+- message // a function to display a message when table mode changes (helpful for screen reader users; see periodic-table.html)
+table, // element where table should be created (if not supplied, table appended to end of document)
+);
+
+When the mode changes, you should redisplay the table again (see periodic-table.html).
+
 
 ## Periodic-Table-JSON
+
 Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
 
 A json of the entire periodic table. Feel free to use it in your projects.
@@ -26,7 +52,9 @@ A json of the entire periodic table. Feel free to use it in your projects.
 Temperatures such as boiling points and melting points are given in degrees kelvin.  Densities are given in g/L and molar heat in (mol*K)
 Information that is missing is represented as null. Some elements may have an image link to their spectral bands.
 
-All elements have a three sentence summary from Wikipedia. Currently the color tag is useless, so please use appearance instead.
+All elements have a three sentence summary from Wikipedia.
+
+Currently the color property contains incomplete information, so please use the appearance property instead.
 
 **Electron configuration** is given as a string, with each orbital separated by a space.  **Electron shells** are given as an array, the first item is the number of electrons in the first shell, the 2nd item is the number of electrons in the second shell, and so on.
 

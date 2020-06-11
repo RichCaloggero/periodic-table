@@ -1,5 +1,27 @@
 // Public domain periodic table data from https://github.com/Bowserinator/Periodic-Table-JSON
 
+function displayTable (dataURL, arrowKeyNavigation, statusMessage, container) {
+if (!container) {
+container = document.createElement("div");
+document.body.append(container);
+} // if
+
+let table;
+fetch (dataURL)
+.then(response => {
+if (response.ok) return response.json();
+else throw new Error(response.error);
+}).then (data => {
+if (container.children[0]) {
+container.children[0].remove();
+} // if
+
+table = createPeriodicTable(data, arrowKeyNavigation);
+container.appendChild(table);
+table.id = "periodicTable";
+statusMessage("Ready.");
+}).catch(error => alert(`${error.message}\n${error.stack}\n`));
+
 function createPeriodicTable (data, arrowNavigation = false) {
 const elements = data.elements;
 const table = document.createElement("table");
@@ -164,12 +186,18 @@ ionization_energies
 `.split(",").map(key => key.trim())
 .map(key => {
 let value = data[key];
+
+if (value) {
 if (key === "source" || key === "spectral_img") {
 value = `<a href="${value}">${value}</a>`;
 } // if
 
 if (key === "shells" || key === "electron_energies") {
 value = value.join(", ");
+} // if
+
+} else {
+value = ""; // remove null
 } // if
 
 if (key === "boil" || key === "melt") key += "ing point";
@@ -311,4 +339,5 @@ return table;
 
 } // createTable
 
+} // displayTable
 
