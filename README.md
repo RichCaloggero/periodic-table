@@ -24,20 +24,14 @@ To use the table generator:
 
 - include dialog.js and createPeriodicTable.js in your HTML file:
    + `script src="dialog.js"></script>`
-- create a checkbox element to select mode (i.e. normal, or full keyboard navigation):
-   + ```
-<div>
-<label>Check this to enable full keyboard navigation:
-<input autofocus id="enableArrowKeyNavigation" type="checkbox">
-(focus will automatically shift to the first cell of the table)
-</label></div>
-```
-- call displayPeriodicTable as follows (all arguments are required):
-   + displayPeriodicTable(
-dataURL // where the JSON data resides
-mode, // true to enable full keyboard navigation, false otherwise
-- message // a function to display a message when table mode changes (helpful for screen reader users; see periodic-table.html)
-table, // element where table should be created (if not supplied, table appended to end of document)
+- create a checkbox element to select mode, i.e. normal, or full keyboard navigation (see periodic-table.html)
+   - call displayPeriodicTable as follows (all arguments are required):
+
+   displayPeriodicTable(
+- dataURL // where the JSON data resides
+- mode, // true to enable full keyboard navigation, false otherwise
+- message, // a function to display a message when table mode changes (helpful for screen reader users; see periodic-table.html)
+- container // element where table should be created (if not supplied, table appended to end of document)
 );
 
 When the mode changes, you should redisplay the table again (see periodic-table.html).
