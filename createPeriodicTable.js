@@ -114,7 +114,7 @@ modal.innerHTML = `
 </div>
 </div>
 `;
-console.debug("modal: created modal:", modal.hidden);
+//console.debug("modal: created modal:", modal.hidden);
 if (container) container.appendChild(modal);
 modal.querySelector(".close").addEventListener("keydown", e => {if (e.key === "Escape") e.target.click();});
 } // if
@@ -154,10 +154,24 @@ density,
             molar_heat,
 discovered_by,
 named_by,
-source
+source,
+spectral_img,
+shells,
+electron_configuration,
+electron_affinity,
+electronegativity_pauling,
+ionization_energies
 `.split(",").map(key => key.trim())
 .map(key => {
-const value = data[key];
+let value = data[key];
+if (key === "source" || key === "spectral_img") {
+value = `<a href="${value}">${value}</a>`;
+} // if
+
+if (key === "shells" || key === "electron_energies") {
+value = value.join(", ");
+} // if
+
 if (key === "boil" || key === "melt") key += "ing point";
 key = key.replace("_", " ");
 return `<tr class="property">

@@ -10,9 +10,9 @@ It operates in two modes:
    + press enter when screen reader is running to get info about an element (most will synthesize a click for you)
 - keyboard navigation mode
    + provides arrow key navigation around the table
-- minimal formating via stylesheet
+- minimal formatting via stylesheet
 - no attempt to colorize (seems to be many common color schemes, but no "standard" one)
-   + should be straightforward to add via syltsheet
+   + should be straightforward to add via stylesheet
 
 [See it running here](./periodic-table.html)
 
