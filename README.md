@@ -25,7 +25,10 @@ To use the table generator:
 - include dialog.js and createPeriodicTable.js in your HTML file:
    + `script src="dialog.js"></script>`
 - create a checkbox element to select mode, i.e. normal, or full keyboard navigation (see periodic-table.html)
-   - call displayPeriodicTable as follows (all arguments are required):
+- call displayPeriodTable (see below for argument descriptions)
+- add event handler to redisplay table when mode changes (see periodic-table.html)
+
+call displayPeriodicTable as follows (all arguments are required):
 
    displayPeriodicTable(
 - dataURL // where the JSON data resides
@@ -34,7 +37,6 @@ To use the table generator:
 - container // element where table should be created (if not supplied, table appended to end of document)
 );
 
-When the mode changes, you should redisplay the table again (see periodic-table.html).
 
 
 ## Periodic-Table-JSON
