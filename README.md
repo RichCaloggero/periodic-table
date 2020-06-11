@@ -37,6 +37,13 @@ call displayPeriodicTable as follows (all arguments are required):
 - container // element where table should be created (if not supplied, table appended to end of document)
 );
 
+## CSS
+
+The CSS here is rutamentary.
+
+- should be in it's own file
+- should probably be more colorful
+
 
 
 ## Periodic-Table-JSON
