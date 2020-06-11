@@ -6,15 +6,24 @@ const table = document.createElement("table");
 const head = createHead(document.createElement("thead"));
 const body = createBody(document.createElement("tbody"));
 const periodicTable = document.createElement("div");
-let keyboardHelpModal;
 
 periodicTable.classList.add("periodicTable");
 table.appendChild(head);
 table.appendChild(body);
 periodicTable.appendChild(table);
 
+const elementInfo = document.createElement("html-dialog")
+elementInfo.id = "element-info";
+periodicTable.appendChild(elementInfo);
+
 if (arrowNavigation) {
+const keyboardHelp = document.createElement("html-dialog")
+keyboardHelp.id = "keyboard-help";
+keyboardHelp.title = "Keyboard Help";
+keyboardHelp.appendChild(getKeyboardCommands());
+periodicTable.appendChild(keyboardHelp);
 periodicTable.setAttribute("role", "application");
+
 table.addEventListener("keydown", _arrowNavigation);
 table.addEventListener("focusin", trackFocus);
 setTimeout (() => table.querySelector("td a").focus(), 0);
@@ -27,9 +36,13 @@ function displayElementInfo (cell, elements) {
 const link = cell.querySelector("a");
 const atomicNumber = Number(cell.dataset.number);
 const element = elements.find(element => element.number === atomicNumber);
-const modal = createModal("Element Info", getElementInfo(element), periodicTable, "elementInfo",
-() => {modal.hidden = true; link.focus();},
-".summary");
+const elementInfo = periodicTable.querySelector("#element-info");
+elementInfo.title = element.name;
+elementInfo.message = element.summary;
+elementInfo.close = () => link.focus();
+elementInfo.appendChild(getElementInfo(element));
+elementInfo.open();
+
 return periodicTable;
 } // displayElementInfo
 
@@ -55,7 +68,6 @@ col = document.createElement("td");
 
 
 if (element.xpos > colCount) {
-// we need to skip columns
 if (arrowNavigation) {
 col.innerHTML = `<a tabindex="-1" href="#"></a>`;
 } // if
@@ -82,7 +94,6 @@ col.querySelector("a").tabIndex = -1;
 col.dataset.number = element.number;
 col.dataset.group = element.xpos;
 col.dataset.period = element.period;
-col.className = element.category;
 row.appendChild(col);
 }); // forEach element
 
@@ -167,11 +178,6 @@ return `<tr class="property">
 
 const info = document.createElement("div");
 info.innerHTML = `
-<div class="summary">
-<h2>Summary</h2>
-<p>${data.summary}</p>
-</div>
-
 <div class="properties">
 <h3>Properties</h3>
 <table>
@@ -214,9 +220,9 @@ return false;
 // navigation
 
 function showKeyboardHelp (cell) {
-keyboardHelpModal = createModal ("Keyboard Help", getKeyboardCommands(), periodicTable, "keyboardHelp",
-() => {keyboardHelpModal.hidden = true; cell.firstElementChild.focus();}
-);
+const keyboardHelp = periodicTable.querySelector("#keyboard-help");
+keyboardHelp.close = () => cell.firstElementChild.focus();
+keyboardHelp.open();
 } // showKeyboardHelp
 
 
