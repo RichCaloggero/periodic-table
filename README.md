@@ -14,9 +14,9 @@ It operates in two modes:
 - no attempt to colorize (seems to be many common color schemes, but no "standard" one)
    + should be straightforward to add via stylesheet
 
-[See it running here](./periodic-table.html)
+[See it running here](https://RichCaloggero.github.com/periodic-table/periodic-table.html)
 
-## Get this working in your own project
+## How to get this working in your own project
 
 - based on public domain data availabel at https://github.com/Bowserinator/Periodic-Table-JSON
 
