@@ -23,7 +23,7 @@ It operates in two modes:
 To use the table generator:
 
 - include createPeriodicTable.js in your HTML file:
-   + `script src="dialog.js"></script>`
+   + `script src="createPeriodicTable.js"></script>`
 - create a checkbox element to select mode, i.e. normal, or full keyboard navigation (see periodic-table.html)
 - call displayPeriodicTable (see below for argument descriptions)
 - add event handler to redisplay table when mode changes (see periodic-table.html)
