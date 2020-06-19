@@ -31,10 +31,11 @@ padding: 2px;
 
 <div id="container"></div>
 
-<!--<script crossorigin="anonymous" src="dialog.js"></script>-->
-<script crossorigin="anonymous" src="createPeriodicTable.js"></script>
+<!-- crossorigin="anonymous" needed so that periodic table data can be imported -->
 
-<script crossorigin="anonymous">
+<script src="createPeriodicTable.js"></script>
+
+<script>
 const dataURL = "./periodicTableData.json";
 //const dataURL = "https://raw.githubusercontent.com/RichCaloggero/periodic-table/master/periodicTableData.json";
 let table;
