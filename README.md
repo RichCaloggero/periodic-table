@@ -14,7 +14,7 @@ It operates in two modes:
 - no attempt to colorize (seems to be many common color schemes, but no "standard" one)
    + should be straightforward to add via stylesheet
 
-[See it running here](https://RichCaloggero.github.com/periodic-table/periodic-table.html)
+[See it running here](https://RichCaloggero.github.io/periodic-table/periodic-table.html)
 
 ## How to get this working in your own project
 
